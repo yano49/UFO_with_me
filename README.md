@@ -1,2 +1,2 @@
 # UFO_with_me
-This is the game for our project on JAVA
+This is where we will be working on our java project together!
