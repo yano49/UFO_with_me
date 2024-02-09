@@ -58,5 +58,7 @@ public class Main {
         int[] selectionSortedArray = arrayToSort.clone();
         selectionSort.sort(selectionSortedArray);
         System.out.println("Sorted array using SelectionSort: " + java.util.Arrays.toString(selectionSortedArray));
+
+        System.out.println("Fuck you");
     }
 }
