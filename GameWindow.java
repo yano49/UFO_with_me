@@ -1,35 +1,52 @@
-import java.awt.event.*;
-import java.io.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.*;
 
 // Game window is a frame
 public class GameWindow extends JFrame implements ActionListener, KeyListener {
-    // Some fields are added with the purpose of making them a global variable
+    //Some fields are added with the purpose of making them a global variable
     private JPanel menuPanel;
     private JButton playButton;
     private JButton settingButton;
-    private JPanel cardPanel = new JPanel(new CardLayout());;
-    // Initializing a soundPlayer in the main frame makes it so that a method can change every panel's music
+    private JPanel cardPanel = new JPanel(new CardLayout());
+    //Initializing a soundPlayer in the main frame makes it so that a method can change every panel's music
     public SoundPlayerPanel soundPlayerPanel;
     private GamePanel gamePanel;
     private CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
 
+    private ImageIcon[] backgroundImages;
+    private int currentImageIndex;
+    private Timer backgroundTimer;
+
     public GameWindow() {
         soundPlayerPanel = new SoundPlayerPanel(this);
-        // Music will be already opened upon initial entry
+        //Music will be already opened upon initial entry
         soundPlayerPanel.playMusicClip();
 
+        backgroundImages = new ImageIcon[]{
+                new ImageIcon("src/Image1.png"),
+                new ImageIcon("src/Image2.png"),
+                new ImageIcon("src/Image3.png"),
+                new ImageIcon("src/Image4.png"),
+                new ImageIcon("src/Image5.png")
+        };
 
-        // Retrieving the background image
-        ImageIcon originalSpaceBackground = new ImageIcon("src/Space_Background2.png");
-        // Resizing the image according to the frame size
+        backgroundTimer = new Timer(5000, e -> changeBackground());
+        backgroundTimer.start();
+
+        //Retrieving the background image
+        ImageIcon originalSpaceBackground = backgroundImages[0];
+        //Resizing the image according to the frame size
         Image resizedImage = originalSpaceBackground.getImage().getScaledInstance(StandardFrame.screenWidth, StandardFrame.screenHeight, Image.SCALE_SMOOTH);
         ImageIcon spaceBackground = new ImageIcon(resizedImage);
 
         JLabel backgroundLabel = new JLabel();
         backgroundLabel.setIcon(spaceBackground);
-        // Adding the background label to the frame's content pane
+        //Adding the background label to the frame's content pane
         setContentPane(backgroundLabel);
 
         // Creating the menu panel which is set in the createMenuPanel method
@@ -37,7 +54,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
         // very important to set opacity of the panel so that the background image shows
         menuPanel.setOpaque(false);
 
-        // Using a card layout to travel between different panels / interfaces
+        //Using a card layout to travel between different panels / interfaces
         cardPanel.add(menuPanel, "menu");
         // very important to set opacity of the panel so that the background image shows
         cardPanel.setOpaque(false);
@@ -45,21 +62,17 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
         setLayout(new BorderLayout());
         add(cardPanel, BorderLayout.CENTER);
 
-        gamePanel = new GamePanel(new ImageIcon("src/Space_Background2.png").getImage(), this);
+        gamePanel = new GamePanel(backgroundImages[0].getImage(), this);
         cardPanel.add(gamePanel, "game");
 
         SoundPlayerPanel soundPlayerPanel = new SoundPlayerPanel(this);
         cardPanel.add(soundPlayerPanel, "sound");
 
-        // Standard frame settings
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("UFO with me");
         setIconImage(new ImageIcon("src/iconImage.png").getImage());
-        // Using the StandardFrame interface to set the size value
         setSize(StandardFrame.frameSize);
-        // adding key listener to this frame / class
         addKeyListener(this);
-        // Using the StandardFrame interface to set the frame to the middle of the screen when it pops up
         StandardFrame.setFrameMiddle(this);
     }
 
@@ -143,18 +156,17 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
         return panel;
     }
 
-    public JPanel getCardPanel() {
-        return cardPanel;
-    }
 
-    public CardLayout getCardLayout() {
-        return cardLayout;
-    }
+    private void changeBackground() {
+        currentImageIndex = (currentImageIndex + 1) % backgroundImages.length;
+        Image resizedImage = backgroundImages[currentImageIndex].getImage().getScaledInstance(StandardFrame.screenWidth, StandardFrame.screenHeight, Image.SCALE_SMOOTH);
+        ImageIcon newBackground = new ImageIcon(resizedImage);
 
+        // Call the setBackgroundImage method in GamePanel to change the background
+        gamePanel.setBackgroundImage(newBackground.getImage());
+    }
 
     @Override
-    // interface method used to detect if the button has been pressed
-    // Once the button has been pressed it switches to a different card panel
     public void actionPerformed(ActionEvent e) {
         CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
         if (e.getSource() == playButton) {
@@ -248,4 +260,18 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
     }
 
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            GameWindow gameWindow = new GameWindow();
+            gameWindow.setVisible(true);
+        });
+    }
+
+    public CardLayout getCardLayout() {
+        return cardLayout;
+    }
+
+    public JPanel getCardPanel() {
+        return cardPanel;
+    }
 }
