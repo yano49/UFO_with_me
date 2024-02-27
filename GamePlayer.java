@@ -1,11 +1,13 @@
-// GamePanel.java
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Iterator;
+import java.util.Random;
 
 class GamePanel extends JPanel {
     private GameWindow menu;
@@ -29,13 +31,11 @@ class GamePanel extends JPanel {
     private double asteroidSpawnRate = 3; // Adjust spawn rates as needed
     private double blackHoleSpawnRate = 0.5;
     private double spaceCreatureSpawnRate = 0.8;
-    private long second = 0;
 
     public GamePanel(Image backgroundImage, GameWindow window) {
         this.menu = window;
         projectiles = new ArrayList<>();
         this.backgroundImage = backgroundImage;
-        setOpaque(false);
 
         timer = new Timer(10, new ActionListener() {
             @Override
@@ -85,6 +85,11 @@ class GamePanel extends JPanel {
         shieldRegenTimer();
     }
 
+    public void setBackgroundImage(Image backgroundImage) {
+        this.backgroundImage = backgroundImage;
+        repaint();
+    }
+
     private void spawnProjectiles() {
         int panelWidth = getWidth();
         int panelHeight = getHeight();
@@ -110,7 +115,6 @@ class GamePanel extends JPanel {
             projectiles.add(new SpaceCreature((int) spawnX, (int) spawnY));
         }
     }
-// when the objs are removed from arraylist it causes error.
 
     private void moveProjectiles() {
         Iterator<Projectile> iterator = projectiles.iterator();
@@ -125,27 +129,27 @@ class GamePanel extends JPanel {
         }
     }
 
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        // Draw the background image
+        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
 
         // Draw the UFO
         g.drawImage(new ImageIcon("src/ufoImage2transparent.png").getImage(), ufoX, ufoY, ufoSize.width, ufoSize.height, this);
 
         // Draw the projectiles
-
-        //to make sure the specific class from the loop
         for (Projectile projectile : projectiles) {
             if (projectile instanceof Asteroid) {
-                Image asteroidImage = new ImageIcon("src/Asteroid.png").getImage();
-                g.drawImage(asteroidImage, (int) projectile.x, (int) projectile.y, this);
+                g.setColor(Color.GRAY);
+                g.fillOval((int) projectile.x, (int) projectile.y, 30, 30);
             } else if (projectile instanceof BlackHole) {
-                g.setColor(Color.pink);
-                g.drawOval((int) projectile.x, (int) projectile.y, 100, 100);
+                g.setColor(new Color(128, 0, 128)); // Purple color
+                g.fillOval((int) projectile.x, (int) projectile.y, 30, 30);
             } else if (projectile instanceof SpaceCreature) {
-                Image spaceCreatureImage = new ImageIcon("src/SpaceCreature.png").getImage();
-                g.drawImage(spaceCreatureImage, (int) projectile.x, (int) projectile.y, this);
+                g.setColor(Color.GREEN);
+                g.fillRect((int) projectile.x, (int) projectile.y, 30, 30);
             }
         }
 
@@ -170,10 +174,10 @@ class GamePanel extends JPanel {
         // Draw the speed in the middle right area
         if (displayStatus) {
             String speedText = "Speed: " + String.format("%.2f", projectileSpeed);
-            FontMetrics speedFontMetrics = g.getFontMetrics();
-            int speedStringWidth = speedFontMetrics.stringWidth(speedText);
+            FontMetrics fontMetrics = g.getFontMetrics();
+            int speedStringWidth = fontMetrics.stringWidth(speedText);
             int speedX = getWidth() - speedStringWidth - 10; // 10 pixels margin from the right edge
-            int speedY = getHeight() / 2 + speedFontMetrics.getHeight() / 2; // Vertically centered
+            int speedY = getHeight() / 2 + fontMetrics.getHeight() / 2; // Vertically centered
             g.drawString(speedText, speedX, speedY);
 
             // Debug: Draw UFO bounding box
@@ -201,18 +205,14 @@ class GamePanel extends JPanel {
     }
 
     public void collisionDetected(Projectile projectile) {
-        Rectangle projectileBounds;
-        if (projectile instanceof BlackHole) {
-            projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 100, 100);
-        } else {
-            projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 30, 30);
-        }
+        Rectangle projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 30, 30);
         Rectangle ufoBounds = new Rectangle(ufoX, ufoY, ufoSize.width - 10, ufoSize.height);
         Rectangle laserBounds = new Rectangle(laser.getX(), laser.getY(), laser.getLaserWidth(), laser.getLaserHeight());
         if (ufoBounds.intersects(projectileBounds)) {
             if (!shieldOn) {
                 collisionDetect = true;
                 if (menu.soundPlayerPanel.soundFxIsOn()) {
+                    System.out.println(menu.soundPlayerPanel.soundFxIsOn());
                     menu.soundPlayerPanel.playExplosion();
                 }
             } else {
@@ -248,6 +248,7 @@ class GamePanel extends JPanel {
         });
         regenTimer.setRepeats(true);
         regenTimer.start();
+        System.out.println("Shield Timer Condition Met!");
     }
 
     public void setShieldVisible(boolean shieldVisible) {
