@@ -162,10 +162,10 @@ class GamePanel extends JPanel {
             Graphics2D g2d = (Graphics2D) g.create();
             alpha = 0.5f; // Set the transparency level for the shield
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-            g2d.drawImage(new ImageIcon("src/ufoImage2transparent.png").getImage(), ufoX, ufoY, ufoSize.width, ufoSize.height, this);
+            g2d.drawImage(new ImageIcon("src/resources/ufoImage2transparent.png").getImage(), ufoX, ufoY, ufoSize.width, ufoSize.height, this);
             g2d.dispose();
         } else {
-            g.drawImage(new ImageIcon("src/ufoImage2transparent.png").getImage(), ufoX, ufoY, ufoSize.width, ufoSize.height, this);
+            g.drawImage(new ImageIcon("src/resources/ufoImage2transparent.png").getImage(), ufoX, ufoY, ufoSize.width, ufoSize.height, this);
         }
 
         // Draw the projectiles
@@ -173,13 +173,13 @@ class GamePanel extends JPanel {
         //to make sure the specific class from the loop
         for (Projectile projectile : projectiles) {
             if (projectile instanceof Asteroid) {
-                Image asteroidImage = new ImageIcon("src/Asteroid.png").getImage();
+                Image asteroidImage = new ImageIcon("src/resources/Asteroid.png").getImage();
                 g.drawImage(asteroidImage, (int) projectile.x, (int) projectile.y, this);
             } else if (projectile instanceof BlackHole) {
-                Image blackholeImage = new ImageIcon("src/Blackhole.png").getImage();
+                Image blackholeImage = new ImageIcon("src/resources/Blackhole.png").getImage();
                 g.drawImage(blackholeImage, (int) projectile.x, (int) projectile.y,this);
             } else if (projectile instanceof SpaceCreature) {
-                Image spaceCreatureImage = new ImageIcon("src/SpaceCreature.png").getImage();
+                Image spaceCreatureImage = new ImageIcon("src/resources/SpaceCreature.png").getImage();
                 g.drawImage(spaceCreatureImage, (int) projectile.x, (int) projectile.y, this);
             }
         }
@@ -291,7 +291,7 @@ class GamePanel extends JPanel {
     }
 
     public void startTransitionTimer() {
-        transitionTimer = new Timer(10000, new ActionListener() {
+        transitionTimer = new Timer(30000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 transitionImage(); // Call the transitionImage method here
@@ -347,11 +347,11 @@ class GamePanel extends JPanel {
 
     public void loadImage() {
         try {
-            backgroundImage1 = ImageIO.read(new File("src/Space_Background2.png"));
-            backgroundImage2 = ImageIO.read(new File("src/Image2.png"));
-            backgroundImage3 = ImageIO.read(new File("src/Image3.png"));
-            backgroundImage4 = ImageIO.read(new File("src/Image4.png"));
-            backgroundImage5 = ImageIO.read(new File("src/Image5.png"));
+            backgroundImage1 = ImageIO.read(new File("src/resources/Space_Background2.png"));
+            backgroundImage2 = ImageIO.read(new File("src/resources/Image2.png"));
+            backgroundImage3 = ImageIO.read(new File("src/resources/Image3.png"));
+            backgroundImage4 = ImageIO.read(new File("src/resources/Image4.png"));
+            backgroundImage5 = ImageIO.read(new File("src/resources/Image5.png"));
             backgroundImages = new BufferedImage[] {
                     backgroundImage1,
                     backgroundImage2,
