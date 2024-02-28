@@ -11,6 +11,6 @@ public class Asteroid extends Projectile{
     // Implementing the abstract method
     @Override
     public void move() {
-        x -= gamePanel.getProjectileSpeed();
+        x -= gamePanel.getProjectileSpeed(); // The speed of the projectile is determined by the score in the game panel
     }
 }
