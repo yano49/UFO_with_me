@@ -28,21 +28,21 @@ public class SoundPlayerPanel extends JPanel implements ActionListener {
             musiClip = AudioSystem.getClip();
             musiClip.open(audioStream);
 
-            AudioInputStream laserAudioStream = AudioSystem.getAudioInputStream(new File("src/LaserSoundEffect.wav"));
+            AudioInputStream laserAudioStream = AudioSystem.getAudioInputStream(new File("src/resources/LaserSoundEffect.wav"));
             laserClip = AudioSystem.getClip();
             laserClip.open(laserAudioStream);
 
-            AudioInputStream explosionAudioStream = AudioSystem.getAudioInputStream(new File("src/DeathExplosionSoundEffect.wav"));
+            AudioInputStream explosionAudioStream = AudioSystem.getAudioInputStream(new File("src/resources/DeathExplosionSoundEffect.wav"));
             explosionClip = AudioSystem.getClip();
             explosionClip.open(explosionAudioStream);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
-        MusicOn = new ImageIcon("src/MusicOn.png");
-        MusicOff = new ImageIcon("src/MusicOff.png");
+        MusicOn = new ImageIcon("src/resources/MusicOn.png");
+        MusicOff = new ImageIcon("src/resources/MusicOff.png");
 
-        SoundOn = new ImageIcon("src/SoundOn.png");
-        SoundOff = new ImageIcon("src/SoundOff.png");
+        SoundOn = new ImageIcon("src/resources/SoundOn.png");
+        SoundOff = new ImageIcon("src/resources/SoundOff.png");
 
         // Set initial vertical gap based on frame height
         calculateVerticalGap();
