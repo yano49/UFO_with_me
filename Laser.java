@@ -89,7 +89,11 @@ public class Laser extends JPanel {
             Iterator<Projectile> iterator = gamePanel.getProjectiles().iterator();
             while (iterator.hasNext()) {
                 Projectile projectile = iterator.next();
-                Rectangle projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 30, 30);
+                if (projectile instanceof BlackHole) {
+                    projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 0, 0);
+                } else {
+                    projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 30, 30);
+                }
                 if (laserBounds.intersects(projectileBounds)) {
                     if (menu.soundPlayerPanel.soundFxIsOn()) {
                         System.out.println(menu.soundPlayerPanel.soundFxIsOn());
