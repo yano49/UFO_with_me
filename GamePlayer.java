@@ -1,4 +1,4 @@
-// GamePanel.java
+// The game panel is where the main game runs
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -11,37 +11,38 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 
 class GamePanel extends JPanel {
-    private GameWindow menu;
-    private final ArrayList<Projectile> projectiles;
-    private int ufoX = 0;
+    private GameWindow menu; // Connected to the game window 
+    private final ArrayList<Projectile> projectiles; 
+    private double projectileSpeed = 5; // The initial speed of the projectile
+    // The coordinates and size of the ufo
+    private int ufoX = 0; 
     private int ufoY = 0;
     private Dimension ufoSize = new Dimension(80, 50);
-    private boolean gameOn = false;
-    private Timer timer;
-    private boolean collisionDetect = false;
-    private boolean shieldOn = true;
-    private double score = 0;
-    private double projectileSpeed = 5;
-    private boolean displayStatus = false;
-    private double laserAmmo = 5;
-    private Laser laser;
-    private boolean shieldVisible = true;
-    private float alpha;
+    private boolean gameOn = false; // true when game panel is open 
+    private Timer timer; 
+    private boolean collisionDetect = false; // true when there is a collision
+    private boolean shieldOn = true; // to track the status of the shield
+    private boolean graceState = false; // to track whether the grace period is still active
+    private boolean shieldVisible = true;  // to track whether if the shield is visible or not
+    private double score = 0; // The initialization of the score
+    private boolean displayStatus = false; // Tracks whether the try hard mode is on or not
+    private double laserAmmo = 5;  // Tracking laser ammo in the game panel
+    private Laser laser; // Connecting the laser class
+    private float alpha;  // To control the opcaity 
     private Random random = new Random();
-    private double asteroidSpawnRate = 3; // Adjust spawn rates as needed
+    // Individual projectile spawn rates 
+    private double asteroidSpawnRate = 3;
     private double blackHoleSpawnRate = 0.5;
     private double spaceCreatureSpawnRate = 0.8;
-    private boolean graceState = false;
-    private BufferedImage[] backgroundImages;
+    private BufferedImage[] backgroundImages;  // An array of the background images
     private BufferedImage backgroundImage1;
     private BufferedImage backgroundImage2;
     private BufferedImage backgroundImage3;
     private BufferedImage backgroundImage4;
     private BufferedImage backgroundImage5;
-
-    private int imageIndex = 0;
-    private float imageAlpha;
-    private Timer transitionTimer;
+    private int imageIndex = 0; // The index of the image it currently is on
+    private float imageAlpha; // The opacity value needed for the fading background animation transition 
+    private Timer transitionTimer;  // The timer for the transition timer
 
     public GamePanel(GameWindow window) {
         this.menu = window;
@@ -52,32 +53,44 @@ class GamePanel extends JPanel {
 
         loadImage();
         if (isVisible()) {
+            // Method that handles the background transition
             startTransitionTimer();
         }
 
+        // The timer for the game projectiles to spawn
         timer = new Timer(10, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (gameOn) {
-                    if (!collisionDetect) {
+                    if (!collisionDetect) { 
+                        // When there isn't a collision the score readily increases
+                        // the projectile speed is increase comparative to the score but highest set to 25
                         score += 0.01;
                         if (projectileSpeed <= 25) {
                             projectileSpeed += score * 0.00005;
                         }
 
+                        // Also spawn and handle projectile animations 
                         spawnProjectiles();
                         moveProjectiles();
                         repaint();
                     } else {
+                        // When collsions is detected the score saving process begins
                         try {
                             menu.saveScore(score);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
+
+                        // The Message dialog showing that you have died
                         JOptionPane.showMessageDialog(null, "You have Died");
+                        // returns back to the main menu
                         menu.getCardLayout().show(menu.getCardPanel(), "menu");
+                        // The game is not on in 
                         gameOn = false;
+                        // Collision is reseted
                         collisionDetect = false;
+                        // The game reseted
                         resetGame();
                     }
                 }
@@ -85,6 +98,7 @@ class GamePanel extends JPanel {
         });
         timer.start();
 
+        // The mouse listner tracks the movement of the mouse
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -96,10 +110,12 @@ class GamePanel extends JPanel {
             }
         });
 
+        // Laser functions are added
         laser = new Laser(this, window);
         laser.activateLaserMouseListener();
         laser.ammoTimer();
 
+        // Adding the automatic shield regen timer 
         shieldRegenTimer();
     }
 
@@ -128,9 +144,10 @@ class GamePanel extends JPanel {
             projectiles.add(new SpaceCreature((int) spawnX, (int) spawnY, this));
         }
     }
-// when the objs are removed from arraylist it causes error.
 
     private void moveProjectiles() {
+        // Iterator class is used to avoid exceptions which arrive from deleting elements in the array
+        // This method is used to handle the movements of the projectiles and removing them once they are out of bounds
         Iterator<Projectile> iterator = projectiles.iterator();
         while (iterator.hasNext()) {
             Projectile projectile = iterator.next();
@@ -152,13 +169,15 @@ class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        // This part  is where the background is handled
         Graphics2D g2d2 = (Graphics2D) g.create();
         paintBackgroundImage(g2d2);
 
         g2d2.dispose();
 
-        // Draw the UFO
+        // This part draws the UFO 
         if (graceState) {
+            // This part is to show when the grace period is active
             Graphics2D g2d = (Graphics2D) g.create();
             alpha = 0.5f; // Set the transparency level for the shield
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
@@ -168,9 +187,7 @@ class GamePanel extends JPanel {
             g.drawImage(new ImageIcon("src/resources/ufoImage2transparent.png").getImage(), ufoX, ufoY, ufoSize.width, ufoSize.height, this);
         }
 
-        // Draw the projectiles
-
-        //to make sure the specific class from the loop
+        // This part draws the different types of projectiles which are looping
         for (Projectile projectile : projectiles) {
             if (projectile instanceof Asteroid) {
                 Image asteroidImage = new ImageIcon("src/resources/Asteroid.png").getImage();
@@ -184,15 +201,16 @@ class GamePanel extends JPanel {
             }
         }
 
-        // Draw the score
+        // This part draws the score 
         g.setColor(Color.GREEN);
         g.setFont(new Font("Arial", Font.BOLD, 20));
         g.drawString("Score: " + Math.round(score), 10, 35); // Adjust the position as needed
 
+        // This part drasws the laser when it's activated
         laser.paintLaserAmmo(g);
         laser.paintComponent(g);
 
-        // Inside the paintComponent method
+        // This part draws the sheld 
         if (shieldOn && shieldVisible) {
             Graphics2D g2d = (Graphics2D) g.create();
             alpha = 0.5f; // Set the transparency level for the shield
@@ -202,7 +220,7 @@ class GamePanel extends JPanel {
             g2d.dispose();
         }
 
-        // Draw the speed in the middle right area
+        // This part darws the text when the display status is on
         if (displayStatus) {
             String speedText = "Speed: " + String.format("%.2f", projectileSpeed);
             FontMetrics speedFontMetrics = g.getFontMetrics();
@@ -216,11 +234,12 @@ class GamePanel extends JPanel {
             g.drawRect(ufoX, ufoY, ufoSize.width, ufoSize.height);
 
             g.setFont(new Font("Arial", Font.BOLD, 20));
-            g.drawString("Try Hard Mode", getWidth() / 2 - 50, 35); // Adjust the position as needed
+            g.drawString("Try Hard Mode", getWidth() / 2 - 50, 35); // Adjusting the position relative the screen size
         }
     }
 
     public void resetGame() {
+        // This method is to reset all the values
         score = 0;
         projectileSpeed = 5;
         timer.stop();
@@ -239,7 +258,9 @@ class GamePanel extends JPanel {
     }
 
     public void collisionDetected(Projectile projectile) {
+        // This is the part that handles that collisions detections 
         Rectangle projectileBounds;
+        // Setting the boundaries of the objects
         if (projectile instanceof BlackHole) {
             projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 300, 300);
         } else {
@@ -251,9 +272,11 @@ class GamePanel extends JPanel {
             if (!shieldOn) {
                 collisionDetect = true;
                 if (menu.soundPlayerPanel.soundFxIsOn()) {
+                    // Explosion sound effects when there is a collision
                     menu.soundPlayerPanel.playExplosion();
                 }
             } else {
+                // If the shield is on this activates
                 shieldCollision();
             }
         }
@@ -261,10 +284,11 @@ class GamePanel extends JPanel {
 
     public void shieldCollision() {
         shieldOn = true; // Activate the shield
-        graceState = true;
+        graceState = true; // A small period given to prevents the player from collisions
         shieldVisible = false;
         repaint();
 
+        // The grace period is 1.5 seconds
         Timer gracePeriodTimer = new Timer(1500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -278,6 +302,7 @@ class GamePanel extends JPanel {
     }
 
     public void shieldRegenTimer() {
+        // The methods handles the part where the shield regenerates 
         Timer regenTimer = new Timer(20000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -291,6 +316,8 @@ class GamePanel extends JPanel {
     }
 
     public void startTransitionTimer() {
+        // This part handles the part which counts when the new bacground changes 
+        // Background changes in 30 seconds
         transitionTimer = new Timer(30000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -303,11 +330,12 @@ class GamePanel extends JPanel {
     }
 
     public void transitionImage() {
+        // This part handles the animation of the transition
         imageAlpha = 0; // Reset imageAlpha to 0 at the start of the transition
         Timer imageTransitionTimer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                imageAlpha += 2; // Adjust the increment for smoother transition
+                imageAlpha += 2; // Can adjust the increment for smoother transition
                 if (imageAlpha >= 100) {
                     imageAlpha = 0; // Reset imageAlpha to 0 when the animation completes
                     ((Timer) e.getSource()).stop(); // Stop the timer when the animation completes
@@ -321,6 +349,8 @@ class GamePanel extends JPanel {
     }
 
     public void paintBackgroundImage(Graphics2D g2d) {
+        // This part handles the drawing of the animation and the transitions of the background
+        
         if (imageIndex >= backgroundImages.length) {
             imageIndex = 0;
         }
@@ -346,6 +376,7 @@ class GamePanel extends JPanel {
     }
 
     public void loadImage() {
+        // Loads the background images
         try {
             backgroundImage1 = ImageIO.read(new File("src/resources/Space_Background2.png"));
             backgroundImage2 = ImageIO.read(new File("src/resources/Image2.png"));
@@ -365,6 +396,8 @@ class GamePanel extends JPanel {
             throw new RuntimeException(e);
         }
     }
+
+    // Getter and Setters 
 
     public void setShieldVisible(boolean shieldVisible) {
         this.shieldVisible = shieldVisible;
