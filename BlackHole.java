@@ -8,6 +8,6 @@ public class BlackHole extends Projectile {
     // Abstract method of projectile class
     @Override
     public void move() {
-        x -= 2;
+        x -= 2;  // The speed of the blackhole projectile
     }
 }
