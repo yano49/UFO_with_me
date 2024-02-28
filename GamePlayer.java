@@ -176,8 +176,8 @@ class GamePanel extends JPanel {
                 Image asteroidImage = new ImageIcon("src/Asteroid.png").getImage();
                 g.drawImage(asteroidImage, (int) projectile.x, (int) projectile.y, this);
             } else if (projectile instanceof BlackHole) {
-                g.setColor(Color.pink);
-                g.drawOval((int) projectile.x, (int) projectile.y, 100, 100);
+                Image blackholeImage = new ImageIcon("src/Blackhole.png").getImage();
+                g.drawImage(blackholeImage, (int) projectile.x, (int) projectile.y,this);
             } else if (projectile instanceof SpaceCreature) {
                 Image spaceCreatureImage = new ImageIcon("src/SpaceCreature.png").getImage();
                 g.drawImage(spaceCreatureImage, (int) projectile.x, (int) projectile.y, this);
@@ -241,7 +241,7 @@ class GamePanel extends JPanel {
     public void collisionDetected(Projectile projectile) {
         Rectangle projectileBounds;
         if (projectile instanceof BlackHole) {
-            projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 100, 100);
+            projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 300, 300);
         } else {
             projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 30, 30);
         }
