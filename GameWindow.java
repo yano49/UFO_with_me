@@ -45,7 +45,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
         setLayout(new BorderLayout());
         add(cardPanel, BorderLayout.CENTER);
 
-        gamePanel = new GamePanel(new ImageIcon("src/Space_Background2.png").getImage(), this);
+        gamePanel = new GamePanel(this);
         cardPanel.add(gamePanel, "game");
 
         SoundPlayerPanel soundPlayerPanel = new SoundPlayerPanel(this);
@@ -249,3 +249,4 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
 
 
 }
+
