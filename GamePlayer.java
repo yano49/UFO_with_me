@@ -2,15 +2,17 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Iterator;
+import javax.imageio.ImageIO;
 
 class GamePanel extends JPanel {
     private GameWindow menu;
     private final ArrayList<Projectile> projectiles;
-    private Image backgroundImage; // Added to store the background image
     private int ufoX = 0;
     private int ufoY = 0;
     private Dimension ufoSize = new Dimension(80, 50);
@@ -29,13 +31,29 @@ class GamePanel extends JPanel {
     private double asteroidSpawnRate = 3; // Adjust spawn rates as needed
     private double blackHoleSpawnRate = 0.5;
     private double spaceCreatureSpawnRate = 0.8;
-    private long second = 0;
+    private boolean graceState = false;
+    private BufferedImage[] backgroundImages;
+    private BufferedImage backgroundImage1;
+    private BufferedImage backgroundImage2;
+    private BufferedImage backgroundImage3;
+    private BufferedImage backgroundImage4;
+    private BufferedImage backgroundImage5;
 
-    public GamePanel(Image backgroundImage, GameWindow window) {
+    private int imageIndex = 0;
+    private float imageAlpha;
+    private Timer transitionTimer;
+
+    public GamePanel(GameWindow window) {
         this.menu = window;
         projectiles = new ArrayList<>();
-        this.backgroundImage = backgroundImage;
         setOpaque(false);
+        imageIndex = 0;
+        imageAlpha = 0.0f;
+
+        loadImage();
+        if (isVisible()) {
+            startTransitionTimer();
+        }
 
         timer = new Timer(10, new ActionListener() {
             @Override
@@ -107,7 +125,7 @@ class GamePanel extends JPanel {
         if (random.nextDouble() < spaceCreatureSpawnRate / 100) {
             double spawnX = panelWidth + 30;
             double spawnY = random.nextInt(panelHeight + 1);
-            projectiles.add(new SpaceCreature((int) spawnX, (int) spawnY));
+            projectiles.add(new SpaceCreature((int) spawnX, (int) spawnY, this));
         }
     }
 // when the objs are removed from arraylist it causes error.
@@ -118,7 +136,12 @@ class GamePanel extends JPanel {
             Projectile projectile = iterator.next();
             projectile.move();
             if (projectile.x < 0) {
-                iterator.remove();
+                if (projectile instanceof SpaceCreature) {
+                    SpaceCreature spaceCreature = (SpaceCreature)  projectile;
+                    spaceCreature.respawn();
+                } else {
+                    iterator.remove();
+                }
             } else {
                 collisionDetected(projectile);
             }
@@ -129,9 +152,21 @@ class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        Graphics2D g2d2 = (Graphics2D) g.create();
+        paintBackgroundImage(g2d2);
+
+        g2d2.dispose();
 
         // Draw the UFO
-        g.drawImage(new ImageIcon("src/ufoImage2transparent.png").getImage(), ufoX, ufoY, ufoSize.width, ufoSize.height, this);
+        if (graceState) {
+            Graphics2D g2d = (Graphics2D) g.create();
+            alpha = 0.5f; // Set the transparency level for the shield
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+            g2d.drawImage(new ImageIcon("src/ufoImage2transparent.png").getImage(), ufoX, ufoY, ufoSize.width, ufoSize.height, this);
+            g2d.dispose();
+        } else {
+            g.drawImage(new ImageIcon("src/ufoImage2transparent.png").getImage(), ufoX, ufoY, ufoSize.width, ufoSize.height, this);
+        }
 
         // Draw the projectiles
 
@@ -197,6 +232,9 @@ class GamePanel extends JPanel {
         ufoX = 0;
         ufoY = 0;
 
+        imageIndex = 0;
+        alpha = 0;
+
         timer.start();
     }
 
@@ -223,6 +261,7 @@ class GamePanel extends JPanel {
 
     public void shieldCollision() {
         shieldOn = true; // Activate the shield
+        graceState = true;
         shieldVisible = false;
         repaint();
 
@@ -230,6 +269,7 @@ class GamePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 shieldOn = false; // Deactivate the shield after the grace period
+                graceState = false;
                 repaint();
             }
         });
@@ -248,6 +288,82 @@ class GamePanel extends JPanel {
         });
         regenTimer.setRepeats(true);
         regenTimer.start();
+    }
+
+    public void startTransitionTimer() {
+        transitionTimer = new Timer(10000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                transitionImage(); // Call the transitionImage method here
+                repaint();
+            }
+        });
+        transitionTimer.setRepeats(true);
+        transitionTimer.start();
+    }
+
+    public void transitionImage() {
+        imageAlpha = 0; // Reset imageAlpha to 0 at the start of the transition
+        Timer imageTransitionTimer = new Timer(50, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                imageAlpha += 2; // Adjust the increment for smoother transition
+                if (imageAlpha >= 100) {
+                    imageAlpha = 0; // Reset imageAlpha to 0 when the animation completes
+                    ((Timer) e.getSource()).stop(); // Stop the timer when the animation completes
+                    imageIndex++;
+                }
+                repaint();
+            }
+        });
+        imageTransitionTimer.setRepeats(true);
+        imageTransitionTimer.start();
+    }
+
+    public void paintBackgroundImage(Graphics2D g2d) {
+        if (imageIndex >= backgroundImages.length) {
+            imageIndex = 0;
+        }
+
+        float currentAlpha = (float) (1.0 - (imageAlpha / 100.0));
+        BufferedImage currentImage = backgroundImages[imageIndex];
+        BufferedImage nextImage = backgroundImages[(imageIndex + 1) % backgroundImages.length];
+
+        BufferedImage combined = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2dCombined = combined.createGraphics();
+
+        g2dCombined.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));
+        g2dCombined.drawImage(currentImage, 0, 0, getWidth(), getHeight(), null);
+
+        if (imageAlpha > 0) {
+            float nextAlpha = (float) (imageAlpha / 100.0);
+            g2dCombined.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, nextAlpha));
+            g2dCombined.drawImage(nextImage, 0, 0, getWidth(), getHeight(), null);
+        }
+
+        g2d.drawImage(combined, 0, 0, null);
+        g2dCombined.dispose();
+    }
+
+    public void loadImage() {
+        try {
+            backgroundImage1 = ImageIO.read(new File("src/Space_Background2.png"));
+            backgroundImage2 = ImageIO.read(new File("src/Image2.png"));
+            backgroundImage3 = ImageIO.read(new File("src/Image3.png"));
+            backgroundImage4 = ImageIO.read(new File("src/Image4.png"));
+            backgroundImage5 = ImageIO.read(new File("src/Image5.png"));
+            backgroundImages = new BufferedImage[] {
+                    backgroundImage1,
+                    backgroundImage2,
+                    backgroundImage3,
+                    backgroundImage4,
+                    backgroundImage5,
+            };
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     public void setShieldVisible(boolean shieldVisible) {
