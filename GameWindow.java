@@ -22,7 +22,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
 
 
         // Retrieving the background image
-        ImageIcon originalSpaceBackground = new ImageIcon("src/Space_Background2.png");
+        ImageIcon originalSpaceBackground = new ImageIcon("src/resources/Space_Background2.png");
         // Resizing the image according to the frame size
         Image resizedImage = originalSpaceBackground.getImage().getScaledInstance(StandardFrame.screenWidth, StandardFrame.screenHeight, Image.SCALE_SMOOTH);
         ImageIcon spaceBackground = new ImageIcon(resizedImage);
@@ -54,7 +54,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
         // Standard frame settings
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("UFO with me");
-        setIconImage(new ImageIcon("src/iconImage.png").getImage());
+        setIconImage(new ImageIcon("src/resources/iconImage.png").getImage());
         // Using the StandardFrame interface to set the size value
         setSize(StandardFrame.frameSize);
         // adding key listener to this frame / class
@@ -118,7 +118,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
         titlePanel.setPreferredSize(new Dimension(0, 250));
         JLabel imageLabel = new JLabel();
         // The title bar is made with an image to save time of designing elaborate styles
-        ImageIcon titleImage = new ImageIcon("src/MenuTitle.png");
+        ImageIcon titleImage = new ImageIcon("src/resources/MenuTitle.png");
         imageLabel.setIcon(titleImage);
         titlePanel.add(imageLabel);
         topPanel.add(titlePanel, BorderLayout.SOUTH);
