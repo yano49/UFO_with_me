@@ -83,15 +83,14 @@ class GamePanel extends JPanel {
                         }
 
                         // The Message dialog showing that you have died
-                        JOptionPane.showMessageDialog(null, "You have Died");
-                        // returns back to the main menu
-                        menu.getCardLayout().show(menu.getCardPanel(), "menu");
-                        // The game is not on in 
-                        gameOn = false;
-                        // Collision is reseted
-                        collisionDetect = false;
-                        // The game reseted
-                        resetGame();
+                        EventQueue.invokeLater(() -> {
+                            GameOverPanel gameOverPanel = new GameOverPanel(menu, score);
+                            menu.getCardPanel().add(gameOverPanel, "gameOver");
+                            menu.getCardLayout().show(menu.getCardPanel(), "gameOver");
+                            gameOn = false;
+                            collisionDetect = false;
+                            resetGame();
+                        });
                     }
                 }
             }
