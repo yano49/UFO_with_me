@@ -30,10 +30,9 @@ public class Laser extends JPanel {
                 if (gamePanel.getLaserAmmo() > 0) {
                     laserActivate = true;
                     if (menu.soundPlayerPanel.soundFxIsOn()) {
-                        System.out.println(menu.soundPlayerPanel.soundFxIsOn());
                         menu.soundPlayerPanel.playLaser();
                     }
-                    gamePanel.minusAmmo(1);
+                    gamePanel.minusAmmo(0.5);
                     x = gamePanel.getUfoX() + 60;
                     y = gamePanel.getUfoY() + 25;
                     timer = new Timer(5, new ActionListener() {
@@ -89,14 +88,9 @@ public class Laser extends JPanel {
             Iterator<Projectile> iterator = gamePanel.getProjectiles().iterator();
             while (iterator.hasNext()) {
                 Projectile projectile = iterator.next();
-                if (projectile instanceof BlackHole) {
-                    projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 0, 0);
-                } else {
-                    projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 30, 30);
-                }
+                Rectangle projectileBounds = new Rectangle((int) projectile.x, (int) projectile.y, 30, 30);
                 if (laserBounds.intersects(projectileBounds)) {
                     if (menu.soundPlayerPanel.soundFxIsOn()) {
-                        System.out.println(menu.soundPlayerPanel.soundFxIsOn());
                         menu.soundPlayerPanel.playExplosion();
                     }
                     gamePanel.setScore(gamePanel.getScore() + 1);
