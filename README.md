@@ -1,5 +1,8 @@
 # UFO_with_me
 
+Group Name : Tres Amigos
+Section : 544
+
 This is our project for java OOP course. 
 The name of the game UFO With Me. 
 This is a game where you are travelling through space and trying to avoid projectiles that come in way.
