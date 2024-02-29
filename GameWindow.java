@@ -2,6 +2,7 @@ import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 // Game window is a frame
 public class GameWindow extends JFrame implements ActionListener, KeyListener {
@@ -220,7 +221,6 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
         writer.close();
     }
 
-
     public double retrieveScore() {
         double score = 0.0;
         BufferedReader reader = null;
@@ -247,6 +247,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
         return score;
     }
 
-
+    public GamePanel getGamePanel() {
+        return gamePanel;
+    }
 }
-
