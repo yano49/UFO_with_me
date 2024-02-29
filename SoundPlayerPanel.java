@@ -23,7 +23,7 @@ public class SoundPlayerPanel extends JPanel implements ActionListener {
     public SoundPlayerPanel(GameWindow window) {
         this.window = window;
         try {
-            File musicFile = new File("src/opening.wav");
+            File musicFile = new File("src/resources/opening.wav");
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(musicFile);
             musiClip = AudioSystem.getClip();
             musiClip.open(audioStream);
