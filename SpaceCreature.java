@@ -1,8 +1,7 @@
 public class SpaceCreature extends Projectile {
-    private double speed = 5;
-    private double amplitude = 100;  // Adjust the amplitude as needed
-    private double frequency = 0.01;  // Adjust the frequency as needed
+    private double speed = 2;
     private double angle = 0;
+    private double frequency = 0.01;  // Adjust the frequency as needed
     private GamePanel gamePanel;
 
     public SpaceCreature(int x, int y, GamePanel gamePanel) {
@@ -13,7 +12,10 @@ public class SpaceCreature extends Projectile {
     @Override
     public void move() {
         x -= speed;
-        y = (int) (amplitude * Math.sin(angle)) + gamePanel.getHeight() / 2;
+
+        // Adjust the y position based on the difference between SpaceCreature's y and UFO's y
+        double deltaY = gamePanel.getUfoY() - y;
+        y += deltaY * 0.01; // Adjust the multiplier to control the follow speed
 
         angle += frequency;
 
@@ -22,7 +24,7 @@ public class SpaceCreature extends Projectile {
             respawn();
         }
     }
-
+    
     public void respawn() {
         x = gamePanel.getWidth() + 30;
         y = (int) (Math.random() * gamePanel.getHeight());
