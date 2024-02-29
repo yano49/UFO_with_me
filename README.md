@@ -10,7 +10,7 @@ Min Thant (Minn) - 6612012
 Nyi Thu Hein (Zen) - 6612080
 Wai Yan Mya Thaung (Yan) - 6611932
 
-NOTE : The game can be run through the Main class!!!
+NOTE : This codes were run with IntelliJ IDEA, so after downloading these source codes you will need to fix the file path and fix some errors! 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Game Functions -->
