@@ -12,9 +12,9 @@ Wai Yan Mya Thaung (Yan) - 6611932
 
 NOTE : The game can be run through the Main class!!!
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Game Functions -->
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 In this game your objective is to get the highest score as you avoid three types of projectiles : asteriods, spaces creatures and blackholes
 
 You are given a shield that regnerates every 20 seconds and a laser that you can shoot but the ammo is limited to five. However, the ammo replenishes it's energy every 2 seconds
