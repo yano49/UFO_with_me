@@ -16,6 +16,12 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
     private CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
 
     public GameWindow() {
+        try {
+            createScoreFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         soundPlayerPanel = new SoundPlayerPanel(this);
         // Music will be already opened upon initial entry
         soundPlayerPanel.playMusicClip();
@@ -194,6 +200,21 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
 
     }
 
+    public void createScoreFile() throws IOException {
+        File file = new File("score.txt");
+        if (!file.exists()) {
+            FileWriter writer = null;
+            try {
+                writer = new FileWriter(file);
+                writer.write("0.0");
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+        }
+    }
+
     public void saveScore(double score) throws IOException {
         File file = new File("score.txt");
         String previousScore = "";
@@ -205,13 +226,17 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
         }
 
         FileWriter writer = new FileWriter(file);
-        double doubleScore = Double.parseDouble(previousScore);
 
-        if (doubleScore != 0) {
-            if (doubleScore < score) {
-                writer.write(String.valueOf(score));
+        if (previousScore != null && !previousScore.isEmpty()) {
+            double doubleScore = Double.parseDouble(previousScore);
+            if (doubleScore != 0) {
+                if (doubleScore < score) {
+                    writer.write(String.valueOf(score));
+                } else {
+                    writer.write(previousScore);
+                }
             } else {
-                writer.write(previousScore);
+                writer.write(String.valueOf(score));
             }
         } else {
             writer.write(String.valueOf(score));
@@ -219,6 +244,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener {
 
         writer.close();
     }
+
 
     public double retrieveScore() {
         double score = 0.0;
