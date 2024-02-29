@@ -8,6 +8,7 @@ Min Thant (Minn) - 6612012
 Nyi Thu Hein (Zen) - 6612080
 Wai Yan Mya Thaung (Yan) - 6611932
 
+NOTE : The game can be run through the Main class!!!
 
 Game Premise -->
 
