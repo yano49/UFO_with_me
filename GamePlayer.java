@@ -33,13 +33,14 @@ class GamePanel extends JPanel {
     // Individual projectile spawn rates
     private double asteroidSpawnRate = 3;
     private double blackHoleSpawnRate = 0.09;
-    private double spaceCreatureSpawnRate = 0.8;
+    private double spaceCreatureSpawnRate = 0.2;
     private BufferedImage[] backgroundImages;  // An array of the background images
     private BufferedImage backgroundImage1;
     private BufferedImage backgroundImage2;
     private BufferedImage backgroundImage3;
     private BufferedImage backgroundImage4;
     private BufferedImage backgroundImage5;
+    private BufferedImage backgroundImage6;
     private int imageIndex = 0; // The index of the image it currently is on
     private float imageAlpha; // The opacity value needed for the fading background animation transition
     private Timer transitionTimer;  // The timer for the transition timer
@@ -83,15 +84,14 @@ class GamePanel extends JPanel {
                         }
 
                         // The Message dialog showing that you have died
-                        JOptionPane.showMessageDialog(null, "You have Died");
-                        // returns back to the main menu
-                        menu.getCardLayout().show(menu.getCardPanel(), "menu");
-                        // The game is not on in
-                        gameOn = false;
-                        // Collision is reseted
-                        collisionDetect = false;
-                        // The game reseted
-                        resetGame();
+                        EventQueue.invokeLater(() -> {
+                            GameOverPanel gameOverPanel = new GameOverPanel(menu, score);
+                            menu.getCardPanel().add(gameOverPanel, "gameOver");
+                            menu.getCardLayout().show(menu.getCardPanel(), "gameOver");
+                            gameOn = false;
+                            collisionDetect = false;
+                            resetGame();
+                        });
                     }
                 }
             }
@@ -383,12 +383,14 @@ class GamePanel extends JPanel {
             backgroundImage3 = ImageIO.read(new File("src/resources/Image3.png"));
             backgroundImage4 = ImageIO.read(new File("src/resources/Image4.png"));
             backgroundImage5 = ImageIO.read(new File("src/resources/Image5.png"));
+            backgroundImage6 = ImageIO.read(new File("src/resources/Image6.png"));
             backgroundImages = new BufferedImage[] {
                     backgroundImage1,
                     backgroundImage2,
                     backgroundImage3,
                     backgroundImage4,
                     backgroundImage5,
+                    backgroundImage6
             };
 
         } catch (IOException e) {
@@ -453,5 +455,9 @@ class GamePanel extends JPanel {
 
     public void minusAmmo(double ammo) {
         laserAmmo -= ammo;
+    }
+
+    public Dimension getUfoSize() {
+        return ufoSize;
     }
 }
